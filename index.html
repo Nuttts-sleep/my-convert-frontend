@@ -25,26 +25,79 @@
         </form>
     </div>
     
-    <script>
-        // This is the simplest possible script.
+        <script>
         const converterForm = document.getElementById('converter-form');
         const urlInput = document.getElementById('youtube-url');
+        const convertButton = document.getElementById('convert-button');
+        const statusContainer = document.getElementById('status-container');
+        const statusText = document.getElementById('status-text');
+        const loader = document.getElementById('loader');
+        const downloadLink = document.getElementById('download-link');
 
-        converterForm.addEventListener('submit', (event) => {
-            event.preventDefault(); // Stop the form from reloading
-            
+        // !!!!!!!!!!! IMPORTANT !!!!!!!!!!!
+        // This will be the URL of YOUR server that you deploy in Part 3
+        const YOUR_PROXY_API_URL = 'https://YOUR-RENDER-APP-NAME.onrender.com/convert-proxy';
+
+        converterForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
             const youtubeURL = urlInput.value.trim();
+            if (!youtubeURL) {
+                showStatus('Please enter a URL!', 'error');
+                return;
+            }
 
-            if (youtubeURL) {
-                // We construct the URL for the reliable cobalt.tools website.
-                // It automatically takes the YouTube link and puts it in its own input box.
-                const cobaltURL = `https://cobalt.tools/?url=${encodeURIComponent(youtubeURL)}`;
-                
-                // This line simply navigates the browser to that new page.
-                // It's like clicking a link. No CORS, no errors.
-                window.location.href = cobaltURL;
+            setLoadingState(true, 'Asking the magic cloud...');
+            
+            try {
+                // Your website now talks to YOUR proxy server
+                const response = await fetch(YOUR_PROXY_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        url: youtubeURL
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'error' || data.status === 'redirect' || data.error) {
+                    throw new Error(data.text || data.error || 'Could not process this video.');
+                }
+
+                showStatus('Success! Your download is ready.', 'success');
+                downloadLink.href = data.url;
+                downloadLink.style.display = 'block';
+
+            } catch (error) {
+                console.error('API Error:', error);
+                showStatus(`Oops! ${error.message}`, 'error');
+            } finally {
+                setLoadingState(false);
             }
         });
+        
+        function setLoadingState(isLoading, message = '') {
+            statusContainer.style.display = 'none';
+            downloadLink.style.display = 'none';
+
+            if (isLoading) {
+                convertButton.disabled = true;
+                convertButton.textContent = message;
+                loader.style.display = 'block';
+            } else {
+                convertButton.disabled = false;
+                convertButton.textContent = 'Convert';
+                loader.style.display = 'none';
+            }
+        }
+
+        function showStatus(message, type) {
+            statusContainer.style.display = 'block';
+            statusContainer.className = type;
+            statusText.textContent = message;
+        }
     </script>
 </body>
 </html>
