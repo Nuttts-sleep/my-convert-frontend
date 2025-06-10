@@ -7,8 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Load the ytdl-browser library from a reliable CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/ytdl-browser@latest/dist/ytdl.min.js"></script>
     <style>
         body{font-family:'Nunito',sans-serif;background:linear-gradient(135deg,#a8c0ff,#3f2b96);display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;color:#333}.converter-container{background-color:white;padding:40px 50px;border-radius:25px;box-shadow:0 15px 40px rgba(0,0,0,0.15);text-align:center;width:90%;max-width:500px;transition:all 0.3s ease}@media (max-width:600px){.converter-container{padding:30px 25px}}.icon{font-size:50px;color:#8c7ae6;margin-bottom:20px;animation:float 3s ease-in-out infinite}@keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)}}h1{color:#3f2b96;margin-bottom:10px;font-weight:700}p{color:#777;margin-bottom:30px}#converter-form{display:flex;flex-direction:column;gap:15px}.url-input{width:100%;padding:15px;border:2px solid #ddd;border-radius:12px;font-size:16px;font-family:'Nunito',sans-serif;box-sizing:border-box;transition:border-color .3s ease,box-shadow .3s ease}.url-input:focus{outline:none;border-color:#8c7ae6;box-shadow:0 0 10px rgba(140,122,230,0.3)}.convert-button{padding:15px;background:linear-gradient(135deg,#89f7fe,#66a6ff);color:white;border:none;border-radius:12px;font-size:18px;font-weight:700;cursor:pointer;transition:transform .2s ease,box-shadow .3s ease;box-shadow:0 5px 15px rgba(102,166,255,0.4)}.convert-button:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 8px 20px rgba(102,166,255,0.6)}.convert-button:disabled{background:#ccc;cursor:not-allowed;box-shadow:none}#status-container{margin-top:30px;padding:15px;border-radius:10px;display:none;transition:all 0.3s ease}#status-container.success{background-color:#e8f5e9;border:1px solid #a5d6a7}#status-container.error{background-color:#ffebee;border:1px solid #ef9a9a}#status-text{font-weight:700}.loader{border:5px solid #f3f3f3;border-top:5px solid #8c7ae6;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:20px auto 0 auto;display:none}@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}#download-link{display:inline-block;margin-top:15px;padding:10px 20px;background-color:#4CAF50;color:white;text-decoration:none;border-radius:8px;font-weight:700;transition:background-color .3s ease}#download-link:hover{background-color:#45a049}
     </style>
@@ -33,6 +31,9 @@
         </div>
     </div>
 
+    <!-- MOVED THE LIBRARY SCRIPT HERE AND ADDED 'defer' -->
+    <script src="https://cdn.jsdelivr.net/npm/ytdl-browser@latest/dist/ytdl.min.js" defer></script>
+    
     <script>
         const converterForm = document.getElementById('converter-form');
         const urlInput = document.getElementById('youtube-url');
@@ -53,7 +54,6 @@
             setLoadingState(true, 'Fetching video info...');
             
             try {
-                // The 'ytdl' object is now available globally from the script we loaded
                 if (typeof ytdl === 'undefined') {
                     throw new Error('Conversion library failed to load. Please refresh the page.');
                 }
@@ -66,20 +66,17 @@
                 }
                 
                 const videoTitle = info.videoDetails.title.replace(/[^\w\s]/gi, ''); // Sanitize title
-                showStatus('Downloading audio stream...', 'loading');
+                showStatus('Downloading audio stream... (This may take a moment)', 'loading');
 
                 const response = await fetch(audioFormat.url);
                 const data = await response.blob();
 
-                // Create a temporary link and click it to trigger the download
                 const tempUrl = URL.createObjectURL(data);
                 downloadLink.href = tempUrl;
                 downloadLink.download = `${videoTitle}.mp3`;
                 downloadLink.click();
 
-                // Clean up the temporary URL
                 URL.revokeObjectURL(tempUrl);
-
                 showStatus('Success! Download has started.', 'success');
 
             } catch (error) {
