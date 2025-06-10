@@ -31,7 +31,7 @@
         </div>
     </div>
 
-    <script>
+        <script>
         const converterForm = document.getElementById('converter-form');
         const urlInput = document.getElementById('youtube-url');
         const convertButton = document.getElementById('convert-button');
@@ -42,6 +42,12 @@
 
         // This is a helper function to delay execution
         const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        // A helper function to get the YouTube video ID from a URL
+        function getYouTubeId(url) {
+            const arr = url.split(/(vi\/|v%3D|v=|\/v\/|youtu\.be\/|\/embed\/)/);
+            return arr[2] ? arr[2].split(/[^\w-]/i)[0] : arr[0];
+        }
 
         converterForm.addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -54,12 +60,14 @@
             setLoadingState(true, 'Starting conversion...');
             
             try {
+                const videoId = getYouTubeId(youtubeURL);
+
                 // Step 1: Start the conversion job with the loader.to API
-                const startResponse = await fetch(`https://loader.to/api/v2/download.json?url=${encodeURIComponent(youtubeURL)}&format=mp3`);
+                const startResponse = await fetch(`https://loader.to/api/v2/download/mp3/${videoId}`);
                 const startData = await startResponse.json();
 
                 if (!startData.success) {
-                    throw new Error(startData.error || 'Could not start conversion.');
+                    throw new Error(startData.error || 'Could not start conversion. The video might be invalid or private.');
                 }
                 const jobId = startData.id;
                 showStatus('Conversion started... Checking status...', 'loading');
@@ -68,7 +76,7 @@
                 while (true) {
                     await sleep(3000); // Wait 3 seconds before checking again
                     
-                    const statusResponse = await fetch(`https://loader.to/api/v2/status.json?id=${jobId}`);
+                    const statusResponse = await fetch(`https://loader.to/api/v2/status/${jobId}`);
                     const statusData = await statusResponse.json();
 
                     if (statusData.success) {
@@ -84,12 +92,18 @@
                     }
                     
                     // Update the status message with the progress
-                    showStatus(`Converting... ${statusData.progress}%`, 'loading');
+                    const progress = statusData.progress / 10; // The API gives progress out of 1000
+                    showStatus(`Converting... ${progress.toFixed(0)}%`, 'loading');
                 }
 
             } catch (error) {
                 console.error('API Error:', error);
-                showStatus(`Oops! ${error.message}`, 'error');
+                // Check for a specific CORS-like error that this API sometimes gives
+                if (error.message.includes('Failed to fetch')) {
+                    showStatus('Oops! The API seems to be busy. Please try again in a moment.', 'error');
+                } else {
+                    showStatus(`Oops! ${error.message}`, 'error');
+                }
             } finally {
                 setLoadingState(false);
             }
@@ -109,7 +123,7 @@
             }
         }
 
-        function showStatus(message, type) {
+        function showStatus(message, type) {.
             statusContainer.style.display = 'block';
             statusContainer.className = type;
             statusText.textContent = message;
