@@ -32,7 +32,7 @@
         </div>
     </div>
     
-        <script>
+            <script>
         const converterForm = document.getElementById('converter-form');
         const urlInput = document.getElementById('youtube-url');
         const convertButton = document.getElementById('convert-button');
@@ -41,9 +41,8 @@
         const loader = document.getElementById('loader');
         const downloadLink = document.getElementById('download-link');
 
-        // !!!!!!!!!!! IMPORTANT !!!!!!!!!!!
-        // This will be the URL of YOUR server that you deploy in Part 3
-        const YOUR_PROXY_API_URL = 'https://myfinal-convert.onrender.com/convert-proxy';
+        // !!!!!!!!!!! PASTE YOUR RENDER URL HERE !!!!!!!!!!!
+        const YOUR_PROXY_API_URL = 'https://my-converter-proxy.onrender.com/convert'; // <-- REPLACE THIS
 
         converterForm.addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -69,10 +68,12 @@
 
                 const data = await response.json();
 
-                if (data.status === 'error' || data.status === 'redirect' || data.error) {
+                // Check for any kind of error response from the proxy
+                if (!response.ok || data.status === 'error' || data.error) {
                     throw new Error(data.text || data.error || 'Could not process this video.');
                 }
 
+                // If successful, show the download link
                 showStatus('Success! Your download is ready.', 'success');
                 downloadLink.href = data.url;
                 downloadLink.style.display = 'block';
