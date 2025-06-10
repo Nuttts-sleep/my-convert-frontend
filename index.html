@@ -7,8 +7,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <!-- We are including a small library to help with the conversion -->
+    <script src="https://unpkg.com/yt-converter@1.1.2/dist/yt-converter.min.js"></script>
     <style>
-        body{font-family:'Nunito',sans-serif;background:linear-gradient(135deg,#a8c0ff,#3f2b96);display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;color:#333}.converter-container{background-color:white;padding:40px 50px;border-radius:25px;box-shadow:0 15px 40px rgba(0,0,0,0.15);text-align:center;width:90%;max-width:500px;transition:all 0.3s ease}@media (max-width:600px){.converter-container{padding:30px 25px}}.icon{font-size:50px;color:#8c7ae6;margin-bottom:20px;animation:float 3s ease-in-out infinite}@keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)}}h1{color:#3f2b96;margin-bottom:10px;font-weight:700}p{color:#777;margin-bottom:30px}#converter-form{display:flex;flex-direction:column;gap:15px}.url-input{width:100%;padding:15px;border:2px solid #ddd;border-radius:12px;font-size:16px;font-family:'Nunito',sans-serif;box-sizing:border-box;transition:border-color .3s ease,box-shadow .3s ease}.url-input:focus{outline:none;border-color:#8c7ae6;box-shadow:0 0 10px rgba(140,122,230,0.3)}.convert-button{padding:15px;background:linear-gradient(135deg,#89f7fe,#66a6ff);color:white;border:none;border-radius:12px;font-size:18px;font-weight:700;cursor:pointer;transition:transform .2s ease,box-shadow .3s ease;box-shadow:0 5px 15px rgba(102,166,255,0.4)}.convert-button:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 8px 20px rgba(102,166,255,0.6)}.convert-button:disabled{background:#ccc;cursor:not-allowed;box-shadow:none}#status-container{margin-top:30px;padding:15px;border-radius:10px;display:none;transition:all 0.3s ease}#status-container.success{background-color:#e8f5e9;border:1px solid #a5d6a7}#status-container.error{background-color:#ffebee;border:1px solid #ef9a9a}#status-text{font-weight:700}.loader{border:5px solid #f3f3f3;border-top:5px solid #8c7ae6;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:20px auto 0 auto;display:none}@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}#download-link{display:inline-block;margin-top:15px;padding:10px 20px;background-color:#4CAF50;color:white;text-decoration:none;border-radius:8px;font-weight:700;transition:background-color .3s ease}#download-link:hover{background-color:#45a049}
+        body{font-family:'Nunito',sans-serif;background:linear-gradient(135deg,#a8c0ff,#3f2b96);display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;color:#333}.converter-container{background-color:white;padding:40px 50px;border-radius:25px;box-shadow:0 15px 40px rgba(0,0,0,0.15);text-align:center;width:90%;max-width:500px;transition:all 0.3s ease}@media (max-width:600px){.converter-container{padding:30px 25px}}.icon{font-size:50px;color:#8c7ae6;margin-bottom:20px;animation:float 3s ease-in-out infinite}@keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)}}h1{color:#3f2b96;margin-bottom:10px;font-weight:700}p{color:#777;margin-bottom:30px}#converter-form{display:flex;flex-direction:column;gap:15px}.url-input{width:100%;padding:15px;border:2px solid #ddd;border-radius:12px;font-size:16px;font-family:'Nunito',sans-serif;box-sizing:border-box;transition:border-color .3s ease,box-shadow .3s ease}.url-input:focus{outline:none;border-color:#8c7ae6;box-shadow:0 0 10px rgba(140,122,230,0.3)}.convert-button{padding:15px;background:linear-gradient(135deg,#89f7fe,#66a6ff);color:white;border:none;border-radius:12px;font-size:18px;font-weight:700;cursor:pointer;transition:transform .2s ease,box-shadow .3s ease;box-shadow:0 5px 15px rgba(102,166,255,0.4)}.convert-button:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 8px 20px rgba(102,166,255,0.6)}.convert-button:disabled{background:#ccc;cursor:not-allowed;box-shadow:none}#status-container{margin-top:30px;padding:15px;border-radius:10px;display:none;transition:all 0.3s ease}#status-container.success{background-color:#e8f5e9;border:1px solid #a5d6a7}#status-container.error{background-color:#ffebee;border:1px solid #ef9a9a}#status-text{font-weight:700}.loader{border:5px solid #f3f3f3;border-top:5px solid #8c7ae6;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:20px auto 0 auto;display:none}@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
     </style>
 </head>
 <body>
@@ -16,38 +18,27 @@
         <div class="icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-music"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
         </div>
-        <h1>YT-to-MP3 Cloud Converter</h1>
-        <p>Paste a YouTube link below to magically turn it into an MP3!</p>
+        <h1>Browser-Based Converter</h1>
+        <p>Paste a YouTube link below. The conversion happens right in your browser!</p>
         
         <form id="converter-form">
             <input type="text" id="youtube-url" class="url-input" placeholder="https://www.youtube.com/watch?v=..." required>
-            <button type="submit" id="convert-button" class="convert-button">Convert</button>
+            <button type="submit" id="convert-button" class="convert-button">Convert & Download</button>
         </form>
 
         <div class="loader" id="loader"></div>
         <div id="status-container">
             <span id="status-text"></span>
-            <a href="#" id="download-link" target="_blank" style="display: none;">Download MP3</a>
         </div>
     </div>
 
-        <script>
+    <script>
         const converterForm = document.getElementById('converter-form');
         const urlInput = document.getElementById('youtube-url');
         const convertButton = document.getElementById('convert-button');
         const statusContainer = document.getElementById('status-container');
         const statusText = document.getElementById('status-text');
         const loader = document.getElementById('loader');
-        const downloadLink = document.getElementById('download-link');
-
-        // This is a helper function to delay execution
-        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-        // A helper function to get the YouTube video ID from a URL
-        function getYouTubeId(url) {
-            const arr = url.split(/(vi\/|v%3D|v=|\/v\/|youtu\.be\/|\/embed\/)/);
-            return arr[2] ? arr[2].split(/[^\w-]/i)[0] : arr[0];
-        }
 
         converterForm.addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -57,73 +48,43 @@
                 return;
             }
 
-            setLoadingState(true, 'Starting conversion...');
+            setLoadingState(true, 'Preparing download...');
             
             try {
-                const videoId = getYouTubeId(youtubeURL);
-
-                // Step 1: Start the conversion job with the loader.to API
-                const startResponse = await fetch(`https://loader.to/api/v2/download/mp3/${videoId}`);
-                const startData = await startResponse.json();
-
-                if (!startData.success) {
-                    throw new Error(startData.error || 'Could not start conversion. The video might be invalid or private.');
-                }
-                const jobId = startData.id;
-                showStatus('Conversion started... Checking status...', 'loading');
-
-                // Step 2: Poll the API to check the status of the job
-                while (true) {
-                    await sleep(3000); // Wait 3 seconds before checking again
-                    
-                    const statusResponse = await fetch(`https://loader.to/api/v2/status/${jobId}`);
-                    const statusData = await statusResponse.json();
-
-                    if (statusData.success) {
-                        // The job is done!
-                        showStatus('Success! Your download is ready.', 'success');
-                        downloadLink.href = statusData.url;
-                        downloadLink.style.display = 'block';
-                        break; // Exit the loop
-                    }
-
-                    if (statusData.status === 'error') {
-                        throw new Error(statusData.text || 'An unknown error occurred during conversion.');
-                    }
-                    
-                    // Update the status message with the progress
-                    const progress = statusData.progress / 10; // The API gives progress out of 1000
-                    showStatus(`Converting... ${progress.toFixed(0)}%`, 'loading');
-                }
+                // The ytConverter object is available because we included the script in the <head>
+                const data = await ytConverter.convert(youtubeURL);
+                
+                showStatus('Success! Download is starting...', 'success');
+                
+                // This library automatically triggers the download
+                // so we don't need to create a link.
+                // We'll just reset the form after a short delay.
+                setTimeout(() => {
+                    setLoadingState(false);
+                    statusContainer.style.display = 'none';
+                }, 3000); // Reset after 3 seconds
 
             } catch (error) {
-                console.error('API Error:', error);
-                // Check for a specific CORS-like error that this API sometimes gives
-                if (error.message.includes('Failed to fetch')) {
-                    showStatus('Oops! The API seems to be busy. Please try again in a moment.', 'error');
-                } else {
-                    showStatus(`Oops! ${error.message}`, 'error');
-                }
-            } finally {
+                console.error('Conversion Error:', error);
+                showStatus(`Oops! ${error.message}. This video might be protected.`, 'error');
                 setLoadingState(false);
-            }
+            } 
         });
         
         function setLoadingState(isLoading, message = '') {
             statusContainer.style.display = 'none';
-            downloadLink.style.display = 'none';
             if (isLoading) {
                 convertButton.disabled = true;
                 convertButton.textContent = message;
                 loader.style.display = 'block';
             } else {
                 convertButton.disabled = false;
-                convertButton.textContent = 'Convert';
+                convertButton.textContent = 'Convert & Download';
                 loader.style.display = 'none';
             }
         }
 
-        function showStatus(message, type) { // <--- The period is gone!
+        function showStatus(message, type) {
             statusContainer.style.display = 'block';
             statusContainer.className = type;
             statusText.textContent = message;
