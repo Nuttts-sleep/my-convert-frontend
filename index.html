@@ -55,7 +55,7 @@
             
             try {
                 // Step 1: Start the conversion job with the loader.to API
-                const startResponse = await fetch(`https://api.loader.to/v2/download.json?url=${encodeURIComponent(youtubeURL)}&format=mp3`);
+                const startResponse = await fetch(`https://loader.to/api/v2/download.json?url=${encodeURIComponent(youtubeURL)}&format=mp3`);
                 const startData = await startResponse.json();
 
                 if (!startData.success) {
@@ -68,7 +68,7 @@
                 while (true) {
                     await sleep(3000); // Wait 3 seconds before checking again
                     
-                    const statusResponse = await fetch(`https://api.loader.to/v2/status.json?id=${jobId}`);
+                    const statusResponse = await fetch(`https://loader.to/api/v2/status.json?id=${jobId}`);
                     const statusData = await statusResponse.json();
 
                     if (statusData.success) {
